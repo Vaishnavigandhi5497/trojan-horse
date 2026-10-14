@@ -22,8 +22,9 @@ def log_event(event_type, file_path=None, status="SUCCESS", **kwargs):
     Appends events line-by-line avoiding full file re-write.
     """
     try:
+        now_ts = datetime.now().isoformat()
         log_entry = {
-            "timestamp": datetime.now().isoformat(),
+            "timestamp": now_ts,
             "event": event_type,
             "file": file_path,
             "status": status
@@ -36,6 +37,22 @@ def log_event(event_type, file_path=None, status="SUCCESS", **kwargs):
         
         _write_to_path(DEV_PATH, data_str)
         _write_to_path(PROD_PATH, data_str)
+
+        # Cryptographic Forensics: Record event into the tamper-evident audit chain
+        try:
+            import sys
+            if BASE_DIR not in sys.path:
+                sys.path.insert(0, BASE_DIR)
+            from monitor import audit_log
+            audit_log.record_security_event(
+                event_type=event_type,
+                file_path=file_path,
+                status=status,
+                custom_timestamp=now_ts,
+                **kwargs
+            )
+        except Exception as audit_err:
+            print(f"[AUDIT LOG WARNING] Could not append to audit chain: {audit_err}")
             
     except Exception as e:
         print(f"[LOGGER ERROR] Exception creating log entry: {str(e)}")

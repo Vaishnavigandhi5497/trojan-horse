@@ -6,143 +6,187 @@
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
 ![Recharts](https://img.shields.io/badge/Recharts-222222?style=for-the-badge&logo=recharts&logoColor=white)
 ![Tkinter](https://img.shields.io/badge/Tkinter-4B8BBE?style=for-the-badge&logo=python&logoColor=white)
+![Cryptography](https://img.shields.io/badge/Cryptography-SHA--256_%2F_AES--256-blueviolet?style=for-the-badge)
 
-A professional full-stack cybersecurity project simulating a social engineering-based Trojan attack with a real-time behavioral monitoring system and an interactive SIEM-style dashboard.
-
----
-
-## 🔍 Project Overview
-
-This project is a comprehensive simulation designed for educational and defensive security research. It demonstrates how a seemingly harmless "System Cleaner" utility (the social engineering component) can execute a silent ransomware-style encryption attack in the background. 
-
-Simultaneously, the project features a **Behavioral Monitoring Engine** that parses raw file system logs, identifies malicious patterns, and serves a **real-time SIEM Dashboard** to visualize the attack propagation, calculate risk scores, and alert security operations center (SOC) analysts.
+A full-stack cybersecurity simulation designed for educational, defensive security, and incident response research. It demonstrates how a disguised "System Cleaner" utility (the social engineering Trojan) executes a silent ransomware-style encryption attack, while a **Behavioral Monitoring Engine** and a **Real-Time SIEM SOC Dashboard** track propagation, calculate threat scores, and maintain a **tamper-evident SHA-256 cryptographically chained forensic audit log**.
 
 ---
 
-## ✨ Key Features
+## 🔍 System Architecture & Workflow
 
-- **Social Engineering Subagent**: A polished Tkinter-based "System Cleaner Pro" app that acts as the Trojan horse.
-- **Ransomware-Style Encryption**: AES-256 (Fernet) encryption of a target folder to simulate a payload.
-- **Real-Time Telemetry**: JSON-based logging system tracking file modifications and endpoint access.
-- **Behavioral Detection Engine**: Custom Python logic that identifies rapid encryption bursts and cross-day clusters.
-- **SIEM Dashboard**: A high-density React dashboard featuring:
-  - **Non-CUMULATIVE Spikes**: Visualization of attack intensity (events/second).
-  - **Risk Scoring**: Dynamic threat level calculation based on unique file impact and burst speed.
-  - **Live Telemetry Stream**: Real-time log ingestion.
-- **Recovery System**: An integrated decryption module triggered by a unique recovery key.
+```
+[ Victim User ] ──► Launches "System Cleaner Pro" (Fake GUI)
+                            │
+                            ├──► (Foreground) Simulates Registry Optimization / Cache Clean
+                            └──► (Background) Silent AES-256 (Fernet) Encryption Burst
+                                       │
+                        ┌──────────────┴──────────────┐
+                        ▼                             ▼
+               [attack_log.json]              [Desktop/key.txt]
+                 (Raw Telemetry)            (Ransomware Recovery Key)
+                        │
+                        ▼
+            [monitor/audit_log.py]
+      Tamper-Evident SHA-256 Hash Chain
+    Canonical JSON Serialization (RFC 8785)
+                        │
+                        ▼
+             [Flask API Server :3600]
+     Serves Analysis, Raw Logs, & Forensic API
+                        │
+                        ▼
+         [React SIEM SOC Dashboard :5173]
+ ┌───────────────────────────────────────────────┐
+ │ 1. Real-Time Threat Telemetry & Risk Scoring  │
+ │ 2. Non-Cumulative Burst Intensity Graph      │
+ │ 3. Cryptographic Chain Integrity Verifier     │
+ │ 4. Interactive Tampering Demonstration Sandbox │
+ └───────────────────────────────────────────────┘
+```
+
+---
+
+## ✨ Key Features & Upgrades
+
+### 1. Social Engineering Trojan (Fake Utility App)
+- **Polished Tkinter GUI**: Disguised as "System Cleaner Pro 2026" with interactive options: *Quick Scan*, *Deep Clean*, and *Optimize Registry*.
+- **Silent Asynchronous Payload**: Moves an indeterminate progress bar with fake diagnostic logs while spawning a background thread executing rapid encryption on target directories.
+- **Ransomware Transition**: Switches into a high-visibility ransomware lock screen demanding the AES recovery key.
+- **Hardened Decryption Validation**: Validates the recovery key against all locked files; refuses restoration and alerts if an invalid or corrupted key is supplied.
+
+### 2. Behavioral Detection Engine & SIEM Analytics
+- **Non-Cumulative Event Burst Analysis**: Tracks individual event spikes per second without cumulative distortion.
+- **Dynamic Risk Scoring**: Deterministically calculates threat levels (0–100%) and categorizes alerts (**LOW**, **MEDIUM**, **HIGH**) based on:
+  - Unique affected file counts
+  - Peak 5-second encryption burst density
+  - System error rates
+- **Real-Time Telemetry Streaming**: Low-latency log ingestion streamed to security operations center analysts.
+
+### 3. Cryptographic Forensics & Tamper-Evident Audit Logging
+- **SHA-256 Hash Chaining**: Every security event record is cryptographically bound to its predecessor via `prev_hash` starting from a static Genesis Block (`00000000000000000000000000000000`).
+- **Deterministic Canonical Serialization**: Ensures payload integrity and prevents hash mismatch anomalies caused by key order or whitespace formatting.
+- **Continuous Integrity Verification**: Independent mathematical recalculation across every node in the chain to immediately flag:
+  1. Payload modification (e.g., altered filenames, timestamps, or status)
+  2. Stored hash corruption or forged digest insertion
+  3. Intermediate record deletion (broken link in the chain)
+  4. Record reordering or replay attacks
+- **Dual-Mode Forensic Console**:
+  - **Live Production Audit Log**: Real-time cryptographic ledger of live endpoint actions with verification badges and inspection modals.
+  - **Interactive Tampering Sandbox**: An isolated simulation environment allowing security analysts to deliberately mutate payloads, corrupt hashes, or reorder records, observing immediate real-time forensic detection and one-click clean state restoration.
 
 ---
 
 ## 🏗️ Project Structure
 
-| Directory | Description |
+| Path | Description |
 | :--- | :--- |
-| `app/` | The fake "System Cleaner" Trojan application (GUI). |
-| `trojan/` | Core attack logic, encryption modules, and configuration. |
-| `trojan/data/` | Repository for `attack_log.json` and local telemetry. |
-| `monitor/` | The backend detection engine and log parser. |
-| `backend/` | Flask REST API serving analysis and raw logs to the frontend. |
-| `frontend/` | React (Vite) dashboard using Tailwind CSS and Recharts. |
+| `app/main_app.py` | Tkinter-based "System Cleaner Pro" Trojan and Ransomware GUI. |
+| `trojan/attack.py` | Core encryption engine (Fernet AES-256), decryption module, and key manager. |
+| `trojan/utils.py` | Path configurations, key generation routines, and environment paths. |
+| `trojan/logger.py` | Synchronous telemetry logger dispatching to disk and audit chain. |
+| `trojan/data/` | Data store for raw telemetry (`attack_log.json`) and audit logs. |
+| `monitor/detector.py` | Behavioral detection engine, burst calculation, and risk scoring logic. |
+| `monitor/logs_reader.py`| File stream reader for parsing attack telemetry. |
+| `monitor/audit_log.py` | **(New)** Cryptographic audit logging engine, SHA-256 chaining, and verification algorithms. |
+| `backend/server.py` | Flask REST API serving SIEM metrics, telemetry streams, and forensic verification endpoints. |
+| `frontend/` | React (Vite) SIEM SOC Dashboard with Tailwind CSS, Recharts, and Lucide icons. |
+| `frontend/src/components/AuditForensics.jsx` | **(New)** Interactive Cryptographic Forensics UI and Tampering Sandbox. |
+| `tests/test_audit_log.py` | **(New)** Automated test suite covering 8 comprehensive cryptographic security scenarios. |
 
 ---
 
-## 🚀 Setup Instructions
+## 🚀 Setup & Execution Guide
 
-### 1. Clone the Repository
-```bash
-git clone https://github.com/yourusername/trojan-simulation-siem.git
-cd trojan-simulation-siem
-```
+### 1. Prerequisites
+- Python 3.10+
+- Node.js 18+ and npm
 
-### 2. Prepare the Target Environment
-Create a test folder on your Desktop to safely simulate the attack:
+### 2. Install Dependencies
 ```bash
-mkdir ~/Desktop/demo1
-```
-*(Add some non-critical files inside this folder like .txt or .jpg images for the demo)*
+# Install Python backend dependencies
+pip install -r requirements.txt
 
-### 3. Install Python Dependencies
-```bash
-pip install cryptography flask flask-cors
-```
-
-### 4. Install Frontend Dependencies
-```bash
+# Install frontend dashboard dependencies
 cd frontend
 npm install
 cd ..
 ```
 
-### 5. Launch the System
-For the full experience, run these components in separate terminals:
+### 3. Prepare Target Environment
+Create a test directory on your Desktop for safe simulation:
+```bash
+mkdir -p ~/Desktop/demo1
+echo "Confidential Patient Record" > ~/Desktop/demo1/patient_records.txt
+echo "Admin Credentials: root/pass" > ~/Desktop/demo1/credentials.json
+echo "Financial Ledger 2026" > ~/Desktop/demo1/ledger.csv
+```
 
-- **Start the SIEM Backend:**
+### 4. Launch the System
+Run the components in separate terminal windows:
+
+- **Terminal 1: Start SIEM Backend API (Port 3600)**
   ```bash
-  python backend/server.py
+  python3 backend/server.py
   ```
-- **Start the Dashboard Frontend:**
+
+- **Terminal 2: Start Frontend SOC Dashboard (Port 5173)**
   ```bash
   cd frontend && npm run dev
   ```
-- **Launch the Trojan App:**
+  Open `http://localhost:5173` in your browser.
+
+- **Terminal 3: Launch the Trojan Utility App**
   ```bash
-  python app/main_app.py
+  python3 app/main_app.py
   ```
 
 ---
 
-## 🎬 Demo Workflow
+## 🧪 Forensic Security & Verification Test Suite
 
-1. **Dashboard First**: Open the dashboard in your browser (usually `http://localhost:5173`). Observe the "System Online" status and empty metrics.
-2. **The Social Engineering**: Launch the "System Cleaner Pro" app. Click **"Quick Scan"**.
-3. **Silent Propagation**: While the fake progress bar moves, watch the dashboard. You will see **"Encryption Events"** spike and the **"Files Affected"** count rise in real-time.
-4. **Threat Detection**: The SIEM alert panel will shift from **LOW** to **HIGH** risk as the detection engine identifies the rapid burst.
-5. **Recovery**: Navigate to `~/Desktop/key.txt` to find the generated recovery key. Enter it into the "System Locked" interface of the app to restore your files.
+Run the automated test suite to validate the tamper-evident cryptographic chain across all 8 security scenarios:
 
----
+```bash
+python3 -m unittest tests/test_audit_log.py -v
+```
 
-## 📊 Dashboard Visuals
-
-> [!NOTE]
-> *Insert screenshots here for a professional portfolio look*
-
-### SIEM Dashboard UI
-![Dashboard Placeholder](https://via.placeholder.com/800x400?text=SIEM+Dashboard+Interface)
-
-### Fake Application UI
-![App Placeholder](https://via.placeholder.com/400x400?text=Social+Engineering+App+Tool)
+### Test Coverage Scenarios:
+1. `test_1_newly_created_audit_chain_passes_verification`: Baseline validation of authentic genesis and sequential hashes.
+2. `test_2_modifying_event_causes_verification_to_fail`: Detection of payload attribute modifications.
+3. `test_3_modifying_stored_hash_causes_verification_to_fail`: Detection of forged or altered digest values.
+4. `test_4_deleting_record_breaks_previous_hash_link`: Detection of dropped logs or deleted intermediate entries.
+5. `test_5_reordering_records_is_detected`: Detection of chronological replay or reordered logs.
+6. `test_6_empty_audit_log_handled_correctly`: Edge-case testing of empty log states.
+7. `test_7_malformed_input_does_not_crash_service`: Graceful exception handling on corrupt JSON strings.
+8. `test_8_demonstration_reset_and_clean_chain_passes`: End-to-end sandbox lifecycle (tamper -> failure detection -> clean reset -> pass).
 
 ---
 
-## ⚙️ Configuration
+## 🌐 API Reference
 
-- **Telemetry Logs**: Found at `trojan/data/attack_log.json`.
-- **Encryption Keys**: Automatically saved to `~/Desktop/key.txt`.
-- **Target Folder**: Modify `TARGET_FOLDER_NAME` in `trojan/utils.py` to target different directories.
+| Endpoint | Method | Description |
+| :--- | :---: | :--- |
+| `/logs` | `GET` | Fetches raw chronological attack telemetry logs. |
+| `/analysis` | `GET` | Computes burst density, risk score, duration, and alert level. |
+| `/audit/records` | `GET` | Retrieves production audit records with real-time chain verification status. |
+| `/audit/verify` | `GET/POST` | Independently recalculates every SHA-256 hash across the chain. |
+| `/audit/demo` | `GET` | Fetches the current state of the isolated demonstration sandbox. |
+| `/audit/demo/tamper`| `POST` | Injects deliberate tampering (`modify_event`, `modify_hash`, `delete_record`, `reorder_records`). |
+| `/audit/demo/reset` | `POST` | Restores the demonstration sandbox to an authentic, valid state. |
+| `/audit/demo/verify`| `GET/POST` | Re-verifies the sandbox chain integrity. |
 
 ---
 
 ## 🛡️ Security Disclaimer
 
 > [!CAUTION]
-> This software is for **EDUCATIONAL AND RESEARCH PURPOSES ONLY**.
-> - It is designed to run locally on a user-defined test folder.
-> - It does **not** possess real malware traits such as network propagation, persistence, or privilege escalation.
-> - Always run this simulation within a controlled environment. The authors are not responsible for any misuse or data loss.
-
----
-
-## 🔮 Future Roadmap
-
-- [ ] **Packaging**: Compile as a standalone `.app` or `.exe` for more realistic social engineering demos.
-- [ ] **Advanced Anomaly Detection**: Implement machine learning-based entropy analysis for file encryption detection.
-- [ ] **Multi-Device Monitoring**: Support for centralized monitoring of multiple simulated endpoints.
-- [ ] **Elasticsearch Integration**: Migrate from local JSON to a full ELK stack integration.
+> This software is intended **STRICTLY FOR EDUCATIONAL AND RESEARCH PURPOSES**.
+> - It is designed to operate locally on an isolated, user-defined test folder (`~/Desktop/demo1`).
+> - It possesses **no** network propagation, privilege escalation, persistence, or rootkit capabilities.
+> - Always run cybersecurity simulations in safe, isolated virtual machines or development environments.
 
 ---
 
 ## 📄 License
 
 Distributed under the MIT License. See `LICENSE` for more information.
-
-*This project simulates malicious behavior strictly for educational and defensive security research purposes.*

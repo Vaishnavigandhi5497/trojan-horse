@@ -23,3 +23,13 @@ key.txt
 
 # OS
 .DS_Store
+
+# Photos & Presentation Assets
+photos/
+*.png
+*.jpg
+*.jpeg
+
+# Demo target directories
+demo1/
+demo1_locked/
